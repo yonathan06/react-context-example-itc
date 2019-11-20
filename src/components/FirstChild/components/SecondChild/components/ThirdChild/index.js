@@ -1,4 +1,5 @@
 import React from 'react';
+import { MyContext } from '../../../../../../context';
 
 export default class ThirdFormChild extends React.Component {
   constructor(props) {
@@ -6,15 +7,15 @@ export default class ThirdFormChild extends React.Component {
     this.state = {
       form: {
         name: '',
-        avatar: '',
-      },
+        avatar: ''
+      }
     };
   }
 
-  handleOnFormSubmit(event) {
+  handleOnFormSubmit(event, onSubmit) {
     event.preventDefault();
-    this.props.onSubmit(this.state.form);
-    this.setState({ form: { name: '', avatar: '' } })
+    onSubmit(this.state.form);
+    this.setState({ form: { name: '', avatar: '' } });
   }
 
   updateForm(newForm) {
@@ -23,25 +24,37 @@ export default class ThirdFormChild extends React.Component {
 
   render() {
     const { form } = this.state;
-    const { loadingAddUser } = this.props;
     return (
-      <form className="wrapper" onSubmit={event => this.handleOnFormSubmit(event)}>
-        <label>Name</label>
-        <input
-          type="text"
-          value={form.name}
-          onChange={event => this.updateForm({ name: event.target.value })}
-          disabled={loadingAddUser}
-        />
-        <label>Avatar Url</label>
-        <input
-          type="text"
-          value={form.avatar}
-          onChange={event => this.updateForm({ avatar: event.target.value })}
-          disabled={loadingAddUser}
-        />
-        <input type="submit" disabled={loadingAddUser} value="Create user" />
-      </form>
+      <MyContext.Consumer>
+        {({ onSubmit, loadingAddUser }) => (
+          <form
+            className="wrapper"
+            onSubmit={event => this.handleOnFormSubmit(event, onSubmit)}
+          >
+            <label>Name</label>
+            <input
+              type="text"
+              value={form.name}
+              onChange={event => this.updateForm({ name: event.target.value })}
+              disabled={loadingAddUser}
+            />
+            <label>Avatar Url</label>
+            <input
+              type="text"
+              value={form.avatar}
+              onChange={event =>
+                this.updateForm({ avatar: event.target.value })
+              }
+              disabled={loadingAddUser}
+            />
+            <input
+              type="submit"
+              disabled={loadingAddUser}
+              value="Create user"
+            />
+          </form>
+        )}
+      </MyContext.Consumer>
     );
   }
 }

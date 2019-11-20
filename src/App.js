@@ -1,14 +1,16 @@
 import React from 'react';
 import { getUser, createUser } from './lib/api';
 import './App.css';
-import FirstChild from "./components/FirstChild";
+import FirstChild from './components/FirstChild';
+import { MyContext } from './context';
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       user: null,
       loading: false,
-      loadingAddUser: false
+      loadingAddUser: false,
+      onSubmit: async form => await this.submitUserForm(form)
     };
   }
   componentDidMount() {
@@ -40,23 +42,22 @@ class App extends React.Component {
   }
 
   render() {
-    const { loading, user, loadingAddUser } = this.state;
+    const { loading, user } = this.state;
     return (
-      <div className="App">
-        <header className="App-header">
-          {loading && <h5>Loading...</h5>}
-          {!loading && user && (
-            <p>
-              Name: {user.name} <br />
-              <img src={user.avatar} alt={user.name} />
-            </p>
-          )}
-          <FirstChild
-            onSubmit={async (form) => await this.submitUserForm(form)}
-            loadingAddUser={loadingAddUser}
-          />
-        </header>
-      </div>
+      <MyContext.Provider value={this.state}>
+        <div className="App">
+          <header className="App-header">
+            {loading && <h5>Loading...</h5>}
+            {!loading && user && (
+              <p>
+                Name: {user.name} <br />
+                <img src={user.avatar} alt={user.name} />
+              </p>
+            )}
+            <FirstChild/>
+          </header>
+        </div>
+      </MyContext.Provider>
     );
   }
 }
